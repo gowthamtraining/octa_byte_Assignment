@@ -2,7 +2,11 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FiArrowUp, FiArrowDown, FiRefreshCw, FiTrendingUp, FiTrendingDown, FiDollarSign, FiPieChart, FiBarChart2 } from 'react-icons/fi';
 
-
+interface Column {
+    Header: string;
+    accessor: keyof Stock;
+    Cell?: ({ value }: { value: number | null | string }) => React.ReactNode;
+}
 interface Stock {
     id: number;
     particulars: string;
@@ -65,7 +69,7 @@ export default function PortfolioDashboard() {
         return () => clearInterval(intervalId);
     }, []);
 
-    const columns = [
+    const columns: Column[] = [
         {
             Header: 'Particulars',
             accessor: 'particulars',
@@ -132,6 +136,7 @@ export default function PortfolioDashboard() {
             Cell: ({ value }: { value: number | null }) => value ? `₹${value.toFixed(2)}` : 'N/A',
         },
     ];
+
 
     if (loading && !data) {
         return (
@@ -305,10 +310,10 @@ export default function PortfolioDashboard() {
                                 {stocksWithPercent.map((stock) => (
                                     <tr key={stock.id} className="hover:bg-gray-50">
                                         {columns.map((column) => {
-                                            const cellValue = stock[column.accessor as keyof Stock];
+                                            const cellValue = stock[column.accessor];
                                             return (
                                                 <td key={column.accessor} className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                                                    {column.Cell ? column.Cell({ value: cellValue }) : cellValue}
+                                                    {column.Cell ? column.Cell({ value: cellValue as number | null }) : cellValue}
                                                 </td>
                                             );
                                         })}
