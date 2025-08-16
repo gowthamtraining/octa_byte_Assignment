@@ -221,7 +221,7 @@ export default async function handler(
     }));
 
     // Calculate sector summaries
-    const sectors = [...new Set(portfolioData.map(stock => stock.sector))];
+const sectors = Array.from(new Set(portfolioData.map(stock => stock.sector)));
     const sectorSummaries: SectorSummary[] = sectors.map(sector => {
       const sectorStocks = stocksWithData.filter(stock => stock.sector === sector);
       const totalInvestment = sectorStocks.reduce((sum, stock) => sum + stock.investment, 0);
