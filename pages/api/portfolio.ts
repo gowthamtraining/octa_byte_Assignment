@@ -245,7 +245,11 @@ const sectors = Array.from(new Set(portfolioData.map(stock => stock.sector)));
     const totalGainLossPercent = totalInvestment > 0 ? (totalGainLoss / totalInvestment) * 100 : 0;
 
     // Determine if we're serving fresh or cached data
-    const cacheStatus = stocksWithData.some(stock => stock.dataSource === 'cached') ? 'cached' : 'fresh';
+const cacheStatus = stocksWithData.some(stock => {
+  // Check if the data was retrieved from cache (implied by timestamp)
+  const cachedData = cache.get(`stock-${formatTicker(stock.nseBse)}`);
+  return cachedData && Date.now() - cachedData.timestamp < CACHE_DURATION;
+}) ? 'cached' : 'fresh';
 
     res.status(200).json({
       stocks: stocksWithData,
